@@ -1,10 +1,12 @@
 import express from "express";
 import config from "./config.js";
 import sequelize from "./database.js";
-import { User } from "./models/index.js";
+import { User } from "./models/index.js"; // For auto migration every single time server is restarted
 
 const app = express();
 const port = config.port;
+
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("Hello, world!");
