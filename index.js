@@ -17,7 +17,7 @@ app.listen(port, async () => {
     await sequelize.authenticate();
     console.log("Database connection has been established successfully.");
 
-    await sequelize.sync();
+    await sequelize.sync({ alter: true });
     console.log("Auto migration completed.");
 
     console.log(`Server is running on port ${port}`);
