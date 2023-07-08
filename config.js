@@ -10,6 +10,7 @@ const config = {
     database: process.env.DB_NAME,
     port: process.env.DB_PORT || 5432, // Default port for Postgresql
   },
+  secret_key: process.env.SECRET_KEY || ""
 };
 
 export default config;
