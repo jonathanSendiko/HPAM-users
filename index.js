@@ -1,13 +1,22 @@
 import express from "express";
 import config from "./config.js";
 import sequelize from "./database.js";
+import cors from "cors";
 import { User } from "./models/index.js"; // For auto migration every single time server is restarted
 import { userRoutes } from "./routes/index.js";
 
+
 const app = express();
 const port = config.port;
+const corsOptions = {
+  origin: config.origin_url,
+  methods: 'GET, POST, PATCH, DELETE', 
+  allowedHeaders: 'Content-Type, Authorization',
+};
+
 
 app.use(express.json());
+app.use(cors(corsOptions));
 
 app.get("/health", (req, res) => {
   res.status(200).send({success: true, error: null, data:{message: "OK"}})

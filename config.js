@@ -10,7 +10,8 @@ const config = {
     database: process.env.DB_NAME,
     port: process.env.DB_PORT || 5432, // Default port for Postgresql
   },
-  secret_key: process.env.SECRET_KEY || ""
+  secret_key: process.env.SECRET_KEY || "",
+  origin_url: process.env.ORIGIN_URL || "http://localhost:3000"
 };
 
 export default config;
