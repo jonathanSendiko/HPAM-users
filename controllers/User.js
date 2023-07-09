@@ -18,6 +18,27 @@ const findUserByEmail = async (email) => {
   }
 };
 
+const findAllUsers = async () => {
+  try {
+    const users = await User.findAll({attributes:{exclude:['password', 'createdAt', 'updatedAt']}});
+    console.log("USERS", users)
+    return users;
+  } catch (error) {
+    // Pass the error to the calling routes function
+    throw error;
+  }
+};
+
+const findUserById = async (userId) => {
+  try {
+    const user = await User.findByPk(userId, {attributes:{exclude:['password', 'createdAt', 'updatedAt']}});
+    return user;
+  } catch (error) {
+    // Pass the error to the calling routes function
+    throw error;
+  }
+};
+
 const createUser = async (name, email, password) => {
   try {
     // Hash the password
@@ -31,11 +52,11 @@ const createUser = async (name, email, password) => {
     });
 
     // Generate a JWT token
-    const accessToken = jwt.sign({ userId: newUser.id }, config.secret_key, {
+    const accessToken = jwt.sign({ userId: newUser.id, role: newUser.role }, config.secret_key, {
       expiresIn: "60m",
     });
     const refreshToken = jwt.sign(
-      { userId: newUser.id },
+      { userId: newUser.id, role: newUser.role },
       config.secret_refresh_key,
       { expiresIn: "90d" }
     );
@@ -62,11 +83,11 @@ const authorizeUser = async (email, password) => {
       throw new Error("Invalid password");
     }
 
-    const accessToken = jwt.sign({ userId: user.id }, config.secret_key, {
+    const accessToken = jwt.sign({ userId: user.id, role: user.role }, config.secret_key, {
       expiresIn: "60m",
     });
     const refreshToken = jwt.sign(
-      { userId: user.id },
+      { userId: user.id, role: user.role },
       config.secret_refresh_key,
       { expiresIn: "90d" }
     );
@@ -87,7 +108,7 @@ const refreshAccess = (refreshToken) => {
       throw new Error("Refresh Token Failed");
     }
     const accessToken = jwt.sign(
-      { userId: decoded.userId },
+      { userId: decoded.userId, role: decoded.role },
       config.secret_key,
       { expiresIn: "60m" }
     );
@@ -96,4 +117,4 @@ const refreshAccess = (refreshToken) => {
   return result
 };
 
-export { createUser, findUserByEmail, authorizeUser, refreshAccess };
+export { createUser, findUserByEmail, authorizeUser, refreshAccess, findUserById, findAllUsers };

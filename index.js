@@ -3,8 +3,8 @@ import config from "./config.js";
 import sequelize from "./database.js";
 import cors from "cors";
 import { User } from "./models/index.js"; // For auto migration every single time server is restarted
-import { authRoutes } from "./routes/index.js";
-
+import { authRoutes, userRoutes } from "./routes/index.js";
+import { authenticateToken } from "./middleware/authMiddleware.js";
 
 const app = express();
 const port = config.port;
@@ -23,6 +23,7 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/auth", authRoutes)
+app.use("/users", authenticateToken('admin'), userRoutes)
 
 
 app.listen(port, async () => {
