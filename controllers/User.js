@@ -97,6 +97,10 @@ const authorizeUser = async (email, password) => {
     if (!user) {
       throw new Error("User Not Found");
     }
+    // Disallow login if the user's status is false
+    if(!user.status){
+      throw new Error("User is disabled or banned")
+    }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {

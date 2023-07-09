@@ -2,7 +2,7 @@ import express from "express";
 const router = express.Router();
 import {findUserById, findAllUsers, updateUserById} from "../controllers/User.js"
 
-
+// Get All Users route
 router.get("/", async (req,res) => {
     try {
         const users  = await findAllUsers();
@@ -13,7 +13,7 @@ router.get("/", async (req,res) => {
         res.status(500).json({success:false, data: null, error: error.message})
     }
 })
-
+// Get One User route
 router.get("/:userId", async (req,res) => {
     try {
         const {userId} = req.params;
@@ -29,6 +29,7 @@ router.get("/:userId", async (req,res) => {
     }
 })
 
+// Update one user
 router.patch("/:userId", async (req,res) => {
     try {
         const {userId} = req.params;
