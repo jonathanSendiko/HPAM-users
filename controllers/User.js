@@ -20,7 +20,9 @@ const findUserByEmail = async (email) => {
 
 const findAllUsers = async () => {
   try {
-    const users = await User.findAll({attributes:{exclude:['password', 'createdAt', 'updatedAt']}});
+    const users = await User.findAll({
+      attributes: { exclude: ["password", "createdAt", "updatedAt"] },
+    });
     return users;
   } catch (error) {
     // Pass the error to the calling routes function
@@ -30,7 +32,9 @@ const findAllUsers = async () => {
 
 const findUserById = async (userId) => {
   try {
-    const user = await User.findByPk(userId, {attributes:{exclude:['password', 'createdAt', 'updatedAt']}});
+    const user = await User.findByPk(userId, {
+      attributes: { exclude: ["password", "createdAt", "updatedAt"] },
+    });
     return user;
   } catch (error) {
     // Pass the error to the calling routes function
@@ -51,9 +55,13 @@ const createUser = async (name, email, password) => {
     });
 
     // Generate a JWT token
-    const accessToken = jwt.sign({ userId: newUser.id, role: newUser.role }, config.secret_key, {
-      expiresIn: "60m",
-    });
+    const accessToken = jwt.sign(
+      { userId: newUser.id, role: newUser.role },
+      config.secret_key,
+      {
+        expiresIn: "60m",
+      }
+    );
     const refreshToken = jwt.sign(
       { userId: newUser.id, role: newUser.role },
       config.secret_refresh_key,
@@ -70,22 +78,38 @@ const createUser = async (name, email, password) => {
   }
 };
 
-
 const updateUserById = async (userId, name, email, status, role) => {
   try {
     const user = await User.findByPk(userId);
-    if(!user){
-      throw new Error("User Not Found")
+    if (!user) {
+      throw new Error("User Not Found");
     }
     await user.update({
       name,
       email,
-      status, 
-      role
-    })
+      status,
+      role,
+    });
   } catch (error) {
     // Pass the error to the calling routes function
-    if(error.message = "User Not Found"){
+    if ((error.message = "User Not Found")) {
+      throw error;
+    }
+    throw new Error("Failed to update User");
+  }
+};
+
+const deleteUserById = async (userId) => {
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new Error("User Not Found");
+    }
+    return await user.destroy();
+    
+  } catch (error) {
+    // Pass the error to the calling routes function
+    if ((error.message = "User Not Found")) {
       throw error;
     }
     throw new Error("Failed to update User");
@@ -99,8 +123,8 @@ const authorizeUser = async (email, password) => {
       throw new Error("User Not Found");
     }
     // Disallow login if the user's status is false
-    if(!user.status){
-      throw new Error("User is disabled or banned")
+    if (!user.status) {
+      throw new Error("User is disabled or banned");
     }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
@@ -108,9 +132,13 @@ const authorizeUser = async (email, password) => {
       throw new Error("Invalid password");
     }
 
-    const accessToken = jwt.sign({ userId: user.id, role: user.role }, config.secret_key, {
-      expiresIn: "60m",
-    });
+    const accessToken = jwt.sign(
+      { userId: user.id, role: user.role },
+      config.secret_key,
+      {
+        expiresIn: "60m",
+      }
+    );
     const refreshToken = jwt.sign(
       { userId: user.id, role: user.role },
       config.secret_refresh_key,
@@ -127,7 +155,7 @@ const authorizeUser = async (email, password) => {
 };
 
 const refreshAccess = (refreshToken) => {
-  let result = null
+  let result = null;
   jwt.verify(refreshToken, config.secret_refresh_key, (err, decoded) => {
     if (err) {
       throw new Error("Refresh Token Failed");
@@ -137,9 +165,18 @@ const refreshAccess = (refreshToken) => {
       config.secret_key,
       { expiresIn: "60m" }
     );
-    result  = {token: {access_token: accessToken}}
+    result = { token: { access_token: accessToken } };
   });
-  return result
+  return result;
 };
 
-export { createUser, findUserByEmail, authorizeUser, refreshAccess, findUserById, findAllUsers, updateUserById };
+export {
+  createUser,
+  findUserByEmail,
+  authorizeUser,
+  refreshAccess,
+  findUserById,
+  findAllUsers,
+  updateUserById,
+  deleteUserById
+};
