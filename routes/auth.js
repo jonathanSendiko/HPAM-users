@@ -21,6 +21,7 @@ router.post('/register', async (req, res) => {
     }
   });
 
+// Login route
 router.post("/login", async(req,res) => {
     try {
         const {email,password}  = req.body;
@@ -37,10 +38,12 @@ router.post("/login", async(req,res) => {
     }
 })
 
+// Refresh Token route
 router.post("/refresh", async(req, res) => {
   try {
     const {refresh_token} = req.body
     const token = refreshAccess(refresh_token)
+
     return res.status(200).json({data: token, success:true, error: null})
   } catch (error) {
     console.error(error)

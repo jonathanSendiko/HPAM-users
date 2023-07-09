@@ -21,7 +21,6 @@ const findUserByEmail = async (email) => {
 const findAllUsers = async () => {
   try {
     const users = await User.findAll({attributes:{exclude:['password', 'createdAt', 'updatedAt']}});
-    console.log("USERS", users)
     return users;
   } catch (error) {
     // Pass the error to the calling routes function
@@ -71,11 +70,37 @@ const createUser = async (name, email, password) => {
   }
 };
 
+
+const updateUserById = async (userId, name, email, status, role) => {
+  try {
+    const user = await User.findByPk(userId);
+    if(!user){
+      throw new Error("User Not Found")
+    }
+    await user.update({
+      name,
+      email,
+      status, 
+      role
+    })
+  } catch (error) {
+    // Pass the error to the calling routes function
+    if(error.message = "User Not Found"){
+      throw error;
+    }
+    throw new Error("Failed to update User");
+  }
+};
+
 const authorizeUser = async (email, password) => {
   try {
     const user = await User.findOne({ where: { email } });
     if (!user) {
       throw new Error("User Not Found");
+    }
+    // Disallow login if the user's status is false
+    if(!user.status){
+      throw new Error("User is disabled or banned")
     }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
@@ -117,4 +142,4 @@ const refreshAccess = (refreshToken) => {
   return result
 };
 
-export { createUser, findUserByEmail, authorizeUser, refreshAccess, findUserById, findAllUsers };
+export { createUser, findUserByEmail, authorizeUser, refreshAccess, findUserById, findAllUsers, updateUserById };
