@@ -1,10 +1,15 @@
 import express from "express";
 const router = express.Router();
 import {findUserByEmail, authorizeUser, createUser, refreshAccess} from "../controllers/User.js"
+import { validateRegister } from "../middleware/validationMiddleware.js";
 
 // Register route
 router.post('/register', async (req, res) => {
     try {
+      const { error } = validateRegister(req.body);
+      if (error) {
+        return res.status(400).json({ success:false, data: null, error: error.details[0].message });
+      }
       const { name, email, password } = req.body;
   
       // Check if user already exists

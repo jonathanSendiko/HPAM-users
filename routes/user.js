@@ -1,6 +1,7 @@
 import express from "express";
 const router = express.Router();
 import {findUserById, findAllUsers, updateUserById, deleteUserById} from "../controllers/User.js"
+import { validateUpdate } from "../middleware/validationMiddleware.js";
 
 // Get All Users route
 router.get("/", async (req,res) => {
@@ -33,6 +34,10 @@ router.get("/:userId", async (req,res) => {
 router.patch("/:userId", async (req,res) => {
     try {
         const {userId} = req.params;
+        const { error } = validateUpdate(req.body);
+        if (error) {
+          return res.status(400).json({ success:false, data: null, error: error.details[0].message });
+        }
         const {name, email, status} = req.body;
         await updateUserById(userId, name, email, status)
         return res.status(204).json()
