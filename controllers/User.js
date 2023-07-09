@@ -71,7 +71,7 @@ const createUser = async (name, email, password) => {
 };
 
 
-const updateUserById = async (userId, name, email,status) => {
+const updateUserById = async (userId, name, email, status, role) => {
   try {
     const user = await User.findByPk(userId);
     if(!user){
@@ -80,7 +80,8 @@ const updateUserById = async (userId, name, email,status) => {
     await user.update({
       name,
       email,
-      status
+      status, 
+      role
     })
   } catch (error) {
     // Pass the error to the calling routes function
