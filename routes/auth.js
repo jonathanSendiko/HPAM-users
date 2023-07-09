@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import {findUserByEmail, authorizeUser, createUser, refreshAccess} from "../controllers/user.js"
+import {findUserByEmail, authorizeUser, createUser, refreshAccess} from "../controllers/User.js"
 
 // Register route
 router.post('/register', async (req, res) => {
@@ -10,7 +10,7 @@ router.post('/register', async (req, res) => {
       // Check if user already exists
       const existingUser = await findUserByEmail(email);
       if (existingUser) {
-        return res.status(400).json({ error: 'User already exists', success: false, data: null });
+        return res.status(409).json({ error: 'User already exists', success: false, data: null });
       }
       // Create new user
       const newUser = await createUser(name, email, password);
