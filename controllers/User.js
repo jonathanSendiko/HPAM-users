@@ -21,7 +21,6 @@ const findUserByEmail = async (email) => {
 const findAllUsers = async () => {
   try {
     const users = await User.findAll({attributes:{exclude:['password', 'createdAt', 'updatedAt']}});
-    console.log("USERS", users)
     return users;
   } catch (error) {
     // Pass the error to the calling routes function
@@ -71,6 +70,27 @@ const createUser = async (name, email, password) => {
   }
 };
 
+
+const updateUserById = async (userId, name, email,status) => {
+  try {
+    const user = await User.findByPk(userId);
+    if(!user){
+      throw new Error("User Not Found")
+    }
+    await user.update({
+      name,
+      email,
+      status
+    })
+  } catch (error) {
+    // Pass the error to the calling routes function
+    if(error.message = "User Not Found"){
+      throw error;
+    }
+    throw new Error("Failed to update User");
+  }
+};
+
 const authorizeUser = async (email, password) => {
   try {
     const user = await User.findOne({ where: { email } });
@@ -117,4 +137,4 @@ const refreshAccess = (refreshToken) => {
   return result
 };
 
-export { createUser, findUserByEmail, authorizeUser, refreshAccess, findUserById, findAllUsers };
+export { createUser, findUserByEmail, authorizeUser, refreshAccess, findUserById, findAllUsers, updateUserById };
