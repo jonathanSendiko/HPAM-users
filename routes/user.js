@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import {findUserById, findAllUsers, updateUserById} from "../controllers/User.js"
+import {findUserById, findAllUsers, updateUserById, deleteUserById} from "../controllers/User.js"
 
 // Get All Users route
 router.get("/", async (req,res) => {
@@ -38,12 +38,27 @@ router.patch("/:userId", async (req,res) => {
         return res.status(204).json()
 
     } catch (error) {
-        console.error(error)
         if(error.message == "User Not Found"){
             return res.status(500).json({ success:false, data:null, error: error.message,})
         }
+        console.error(error)
         res.status(500).json({success:false, data: null, error: error.message})
     }
 })
+
+router.delete("/:userId", async (req,res) => {
+    try {
+        const {userId} = req.params;
+        await deleteUserById(userId);
+        return res.status(204).json()
+    } catch (error) {
+        if(error.message == "User Not Found"){
+            return res.status(500).json({ success:false, data:null, error: error.message,})
+        }
+        console.error(error)
+        res.status(500).json({success:false, data: null, error: error.message})
+    }
+})
+
 
 export default router
