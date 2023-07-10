@@ -39,7 +39,7 @@ router.post("/login", async(req,res) => {
           return res.status(401).json({error: error.message, success:false, data:null})
         }
         console.error(error)
-        return res.status(500).json({error: error, success: false, data: null})
+        return res.status(500).json({error: error.message, success: false, data: null})
     }
 })
 
